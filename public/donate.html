@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ส่งข้อความโดเนท</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap 5 CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+  body { background-color: #f8f9fa; }
+  .donate-container { max-width: 600px; margin: 50px auto; }
+  .donate-box { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+  #msgList .donate-item { margin-bottom: 15px; }
+  .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+</style>
+</head>
+<body>
+
+<div class="container my-5">
+  <div class="card p-3" style="max-width:600px; margin:auto;">
+    <!-- แสดงข้อความโดเนท -->
+    <div id="msgList" class="d-flex flex-column-reverse"></div>
+    <hr>
+    <!-- ฟอร์มส่งข้อความ -->
+    <div class="d-flex align-items-start mb-3">
+      <img src="" alt="profile" id="showProfile" class="rounded-circle me-2" width="50" height="50">
+      <div class="flex-grow-1">
+        <input id="name" class="form-control mb-2" placeholder="ชื่อผู้โดเนท" disabled>
+        <input id="avatar" type="hidden">
+        <textarea id="msg" class="form-control mb-2" rows="2" placeholder="ข้อความโดเนท"></textarea>
+        <button class="btn btn-primary w-100" onclick="send()">ส่งข้อความ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    // ดึง hostname ของ server อัตโนมัติ
+const serverHost = window.location.hostname;
+const serverPort = 3000;
+const wsPort = 8081;
+
+    document.getElementById("showProfile").src = localStorage.getItem("userPic")
+    document.getElementById("name").value = localStorage.getItem("userFullName")
+    document.getElementById("avatar").value = localStorage.getItem("userPic")
+async function send() {
+    const name = document.getElementById("name").value.trim();
+    const avatar = document.getElementById("avatar").value.trim() || "https://via.placeholder.com/50";
+    const message = document.getElementById("msg").value.trim();
+
+    if(!name || !message) {
+        alert("กรุณากรอกชื่อและข้อความ");
+        return;
+    }
+
+    try {
+         const res = await fetch(`http://${serverHost}:${serverPort}/send`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ name, avatar, message })
+        });
+        const data = await res.json();
+        if(data.status==="success"){
+            addMessage({ name, avatar, message });
+            document.getElementById("msg").value="";
+        } else {
+            alert(data.msg || "เกิดข้อผิดพลาด");
+            window.location.href = "login.html";
+        }
+    } catch(err) {
+        console.error(err);
+        alert("ไม่สามารถส่งข้อความได้");
+    }
+}
+
+// ฟังก์ชันแสดงข้อความในหน้าจอ
+function addMessage({name, avatar, message}) {
+    const container = document.getElementById("msgList");
+
+    const div = document.createElement("div");
+    div.classList.add("donate-item", "d-flex", "align-items-start", "p-2", "border", "rounded");
+
+    div.innerHTML = `
+        <img src="${avatar}" class="avatar">
+        <div>
+            <strong>${name}</strong><br>
+            <span>${message}</span>
+        </div>
+    `;
+
+    container.prepend(div); // เพิ่มด้านบนสุด
+}
+</script>
+
+</body>
+</html>
