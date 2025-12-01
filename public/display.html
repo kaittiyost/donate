@@ -61,7 +61,7 @@ function unlockTTS() {
 const msgList = document.getElementById("msgList");
 
 // เชื่อม WebSocket
-const ws = new WebSocket("ws://localhost:8081");
+const ws = new WebSocket("ws://localhost:3000");
 
 ws.onopen = () => console.log("Connected to WebSocket server");
 
@@ -90,7 +90,8 @@ function addMessage({name, avatar, message}) {
     msgList.prepend(div); // เพิ่มด้านบนสุด
 
     // อ่านข้อความออกเสียง
-    const utter = new SpeechSynthesisUtterance(message);
+    const textToRead = `${name} ส่งข้อความว่า ${message}`;
+    const utter = new SpeechSynthesisUtterance(textToRead);
     utter.lang = "th-TH";
 
     const voices = speechSynthesis.getVoices();

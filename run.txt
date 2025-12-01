@@ -1,0 +1,110 @@
+ด้านล่างนี้คือ **ตัวอย่างไฟล์ systemd** สำหรับรันเว็บเซิร์ฟเวอร์ Node.js (หรือโปรเจค JS/TS ที่คุณใช้) บน Ubuntu Server แบบเป็น Service ที่จัดการ process ให้เอง เช่น รันอัตโนมัติหลังบูต, auto-restart เมื่อ error
+
+---
+
+# ✅ 1) เตรียมโครงสร้างโปรเจคบน Ubuntu
+
+สมมุติคุณวางโปรเจคไว้ที่
+
+```
+/var/www/chat-app
+```
+
+และไฟล์เริ่มต้นของเว็บคือ:
+
+```
+server.js
+```
+
+(หรือ index.js ตามโปรเจคของคุณ)
+
+---
+
+# ✅ 2) สร้างไฟล์ systemd
+
+คำสั่ง:
+
+```bash
+sudo nano /etc/systemd/system/chatapp.service
+```
+
+จากนั้นวางเนื้อหานี้ลงไป:
+
+```
+[Unit]
+Description=Chat Application Server
+After=network.target
+
+[Service]
+# โฟลเดอร์โปรเจค
+WorkingDirectory=/var/www/chat-app
+
+# คำสั่งรัน Node.js
+ExecStart=/usr/bin/node server.js
+
+# หาก Server ล่มให้ restart อัตโนมัติ
+Restart=always
+RestartSec=3
+
+# User/Group ที่ใช้รัน (ไม่ควรรันด้วย root)
+User=www-data
+Group=www-data
+
+# ตั้งค่า Environment ตัวแปร
+Environment=NODE_ENV=production
+Environment=PORT=3000
+
+[Install]
+WantedBy=multi-user.target
+```
+
+---
+
+# ✅ 3) Reload systemd service
+
+```bash
+sudo systemctl daemon-reload
+```
+
+---
+
+# ✅ 4) Enable ให้รันตอนบูต
+
+```bash
+sudo systemctl enable chatapp
+```
+
+---
+
+# ✅ 5) Start service
+
+```bash
+sudo systemctl start chatapp
+```
+
+---
+
+# ✅ 6) เช็คสถานะ
+
+```bash
+sudo systemctl status chatapp
+```
+
+---
+
+# ❗ หมายเหตุสำคัญ
+
+### ✓ ถ้าโปรเจครันด้วย `npm start`
+
+ให้แก้เป็น:
+
+```
+ExecStart=/usr/bin/npm start
+```
+
+หรือถ้าใช้ `pm2` ก็สามารถเขียนแบบ pm2 ได้
+
+---
+
+# ✅ ต้องการให้ผมเขียนไฟล์ systemd แบบ “ครบ 100% ตรงโปรเจคคุณ” ไหม?
+
