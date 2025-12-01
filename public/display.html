@@ -15,7 +15,7 @@
     margin-bottom: 15px;
     padding: 10px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 50px;
 
     /* animation */
     opacity: 0;
@@ -39,7 +39,7 @@
     
     <h3 class="mt-3">ข้อความแบบเรียลไทม์ <div onclick="unlockTTS()" class="btn btn-light btn-sm" id="sound_control">🔇</div></h3>
   </div>
-  <div id="msgList" class="d-flex flex-column-reverse"></div>
+  <div id="msgList" class="d-flex flex-column"></div>
 </div>
 
 <script>
@@ -82,8 +82,8 @@ function addMessage({name, avatar, message}) {
     div.innerHTML = `
         <img src="${avatar || "https://via.placeholder.com/50"}" class="avatar">
         <div>
-            <strong>${name}</strong><br>
-            <span>${message}</span>
+            <label>${name}</label>
+            <h3>${message}</h3>
         </div>
     `;
 

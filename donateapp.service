@@ -1,0 +1,25 @@
+[Unit]
+Description=Chat Application Server
+After=network.target
+
+[Service]
+# โฟลเดอร์โปรเจค
+WorkingDirectory=/pn-data/home/kiatti/donate
+
+# คำสั่งรัน Node.js
+ExecStart=/usr/bin/node server.js
+
+# หาก Server ล่มให้ restart อัตโนมัติ
+Restart=always
+RestartSec=3
+
+# User/Group ที่ใช้รัน (ไม่ควรรันด้วย root)
+User=www-data
+Group=www-data
+
+# ตั้งค่า Environment ตัวแปร
+Environment=NODE_ENV=production
+Environment=PORT=3000
+
+[Install]
+WantedBy=multi-user.target

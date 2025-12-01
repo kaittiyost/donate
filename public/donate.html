@@ -49,8 +49,8 @@ async function send() {
     const avatar = document.getElementById("avatar").value.trim() || "https://via.placeholder.com/50";
     const message = document.getElementById("msg").value.trim();
 
-    if(!name || !message) {
-        alert("กรุณากรอกชื่อและข้อความ");
+    if(!message) {
+        alert("กรุณากรอกข้อความ");
         return;
     }
 
